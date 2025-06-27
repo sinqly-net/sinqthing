@@ -1,0 +1,7 @@
+/* You can add global styles to this file, and also import other style files */
+@use "tailwindcss" as *;
+@use "flowbite/src/themes/default" as *;
+
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));

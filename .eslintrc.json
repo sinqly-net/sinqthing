@@ -1,0 +1,41 @@
+{
+  "root": true,
+  "plugins": [
+    "unused-imports",
+    "simple-import-sort"
+  ],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "extends": [
+        "plugin:prettier/recommended"
+      ]
+    },
+    {
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"],
+      "rules": {}
+    },
+    {
+      "files": ["*.html"],
+      "excludedFiles": ["*inline-template-*.component.html"],
+      "extends": ["plugin:prettier/recommended"],
+      "rules": {
+        "prettier/prettier": ["error", { "parser": "angular" }]
+      }
+    },
+    {
+      "files": ["*.ts"],
+      "rules": {
+        "unused-imports/no-unused-imports": "error"
+      }
+    },
+    {
+      "files": ["*.ts"],
+      "rules": {
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error"
+      }
+    }
+  ]
+}
