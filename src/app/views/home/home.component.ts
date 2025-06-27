@@ -20,10 +20,13 @@ export class HomeComponent {
   }
 
   addSpotifyProvider() {
-    this.musicService.registerProvider(
-      'spotify',
-      '77bbe0dfc72e45d9bc345d11db751462'
-    );
+    const spotifyClientID = localStorage.getItem('cstm_spotify_key');
+    if (!spotifyClientID) {
+      console.warn('Add "cstm_spotify_key" in localStorage!"');
+      return;
+    }
+
+    this.musicService.registerProvider('spotify', spotifyClientID);
   }
 
   loginSpotify() {
