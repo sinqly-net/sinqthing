@@ -25,16 +25,12 @@ export abstract class BaseMusicProvider {
   // TODO: add general type
   abstract getPlaybackState(): Observable<any>;
 
-  // TODO: add general type
-  abstract nextSong(): Observable<any>;
+  abstract nextSong(): Observable<boolean>;
 
-  // TODO: add general type
-  abstract previousSong(): Observable<any>;
+  abstract previousSong(): Observable<boolean>;
 
-  // TODO: add general type
   abstract pause(): Observable<null>;
 
-  // TODO: add general type
   abstract resume(): Observable<null>;
 
   // TODO: add general type
@@ -42,7 +38,7 @@ export abstract class BaseMusicProvider {
 
   abstract getStore(): BaseProviderStoreAbstract;
 
-  callback?(): void;
+  callback?(): Observable<boolean>;
 
   createRandomString(length: number): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';

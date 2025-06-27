@@ -8,6 +8,7 @@ import { BaseProviderStoreAbstract } from '@utils/classes/base-provider-store.ab
 import { SpotifyPlaybackState } from '@utils/music_provider/spotify/interfaces/SpotifyPlaybackState.interface';
 import { SpotifyCurrentlyPlaying } from '@utils/music_provider/spotify/interfaces/SpotifyCurrentlyPlaying.interface';
 import { SpotifyComplexArtist } from '@utils/music_provider/spotify/interfaces/SpotifyArtist.interface';
+import { SpotifyAccessToken } from '@utils/music_provider/spotify/interfaces/SpotifyAccessToken.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -73,7 +74,7 @@ export class SpotifyService extends BaseMusicProvider {
     });
   }
 
-  handleCallback(): Observable<boolean> {
+  override callback(): Observable<boolean> {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     const verifier = localStorage.getItem('spotify_pkce_verifier');
@@ -88,13 +89,16 @@ export class SpotifyService extends BaseMusicProvider {
       code_verifier: verifier,
     });
 
-    // TODO: add type
     return this.http
-      .post<any>(`${this.spotifyAccountURL}/api/token`, body.toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      })
+      .post<SpotifyAccessToken>(
+        `${this.spotifyAccountURL}/api/token`,
+        body.toString(),
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        }
+      )
       .pipe(
-        map(res => {
+        map((res: SpotifyAccessToken) => {
           this.accessToken = res.access_token;
           localStorage.setItem('spotify_access_token', res.access_token);
 

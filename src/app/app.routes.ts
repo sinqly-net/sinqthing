@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from '@views/home/home.component';
 import { CurrentlyPlayingComponent } from '@views/currently-playing/currently-playing.component';
 import { ChooseContentComponent } from '@views/choose-content/choose-content.component';
-import { SpotifyCallbackComponent } from '@utils/music_provider/spotify/components/spotify-callback/spotify-callback.component';
+import { CallbackComponent } from '@views/login/callback/callback.component';
 
 export const routes: Routes = [
   {
@@ -22,15 +22,9 @@ export const routes: Routes = [
     path: 'choose_content',
     component: ChooseContentComponent,
   },
-  // TODO: replace with one component for all provider
   {
-    path: 'callback',
-    children: [
-      {
-        path: 'spotify',
-        component: SpotifyCallbackComponent,
-      },
-    ],
+    path: 'callback/:provider',
+    component: CallbackComponent,
   },
   {
     path: '**',

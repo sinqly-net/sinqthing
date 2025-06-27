@@ -72,24 +72,4 @@ export class MusicService {
     if (!playbackStateSubject) return of(null);
     return playbackStateSubject;
   }
-
-  pause(): Observable<null> {
-    return this.providers.get(this.selectedMusicProvider)?.pause() ?? of(null);
-  }
-
-  resume(): Observable<null> {
-    return this.providers.get(this.selectedMusicProvider)?.resume() ?? of(null);
-  }
-
-  next(): void {
-    this.providers.get(this.selectedMusicProvider)?.nextSong();
-  }
-
-  previous(): void {
-    this.providers.get(this.selectedMusicProvider)?.previousSong();
-  }
-
-  getArtist(artist: string): Observable<any> {
-    return this.providers.get(this.selectedMusicProvider)?.getArtist(artist);
-  }
 }

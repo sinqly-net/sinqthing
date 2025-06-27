@@ -12,6 +12,7 @@ import { MusicService } from '@utils/services/music.service';
 import ColorThief from 'colorthief';
 import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
+import { BaseMusicProvider } from '@utils/classes/base-music-provider.abstract';
 
 @Component({
   selector: 'app-currently-playing',
@@ -33,6 +34,7 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   protected paused = false;
   private readonly router = inject(Router);
   private animationFrameId: number | null = null;
+  private provider: BaseMusicProvider | undefined;
 
   protected get loaded(): boolean {
     return this.currentlyPlaying && this.playbackState;
@@ -81,6 +83,7 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadPlaying();
+    this.provider = this.musicService.getProvider();
   }
 
   ngOnDestroy() {
@@ -98,14 +101,16 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   }
 
   protected onPauseClicked() {
+    if (!this.provider) return;
+
     if (this.currentlyPlaying && !this.paused) {
-      this.musicService.pause().subscribe(() => {
+      this.provider.pause().subscribe(() => {
         setTimeout(() => this.loadPlaying(), 5);
       });
 
       this.paused = true;
     } else {
-      this.musicService.resume().subscribe(() => {
+      this.provider.resume().subscribe(() => {
         setTimeout(() => this.loadPlaying(), 5);
       });
 
