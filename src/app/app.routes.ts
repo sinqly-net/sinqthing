@@ -22,6 +22,7 @@ export const routes: Routes = [
     path: 'choose_content',
     component: ChooseContentComponent,
   },
+  // TODO: replace with one component for all provider
   {
     path: 'callback',
     children: [

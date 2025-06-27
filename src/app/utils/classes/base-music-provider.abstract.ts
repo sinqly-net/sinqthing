@@ -19,21 +19,30 @@ export abstract class BaseMusicProvider {
 
   abstract getLabel(): string;
 
+  // TODO: add general type
   abstract getCurrentlyPlaying(): Observable<any>;
 
+  // TODO: add general type
   abstract getPlaybackState(): Observable<any>;
 
+  // TODO: add general type
   abstract nextSong(): Observable<any>;
 
+  // TODO: add general type
   abstract previousSong(): Observable<any>;
 
+  // TODO: add general type
   abstract pause(): Observable<null>;
 
+  // TODO: add general type
   abstract resume(): Observable<null>;
 
+  // TODO: add general type
   abstract getArtist(artist: any): any;
 
   abstract getStore(): BaseProviderStoreAbstract;
+
+  callback?(): void;
 
   createRandomString(length: number): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';

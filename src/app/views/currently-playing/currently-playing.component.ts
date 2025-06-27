@@ -12,7 +12,6 @@ import { MusicService } from '@utils/services/music.service';
 import ColorThief from 'colorthief';
 import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
-import { BaseMusicProvider } from '@utils/classes/base-music-provider.abstract';
 
 @Component({
   selector: 'app-currently-playing',
@@ -34,10 +33,6 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   protected paused = false;
   private readonly router = inject(Router);
   private animationFrameId: number | null = null;
-
-  protected get musicProvider(): BaseMusicProvider | undefined {
-    return this.musicService.getProvider();
-  }
 
   protected get loaded(): boolean {
     return this.currentlyPlaying && this.playbackState;
@@ -107,11 +102,13 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
       this.musicService.pause().subscribe(() => {
         setTimeout(() => this.loadPlaying(), 5);
       });
+
       this.paused = true;
     } else {
       this.musicService.resume().subscribe(() => {
         setTimeout(() => this.loadPlaying(), 5);
       });
+
       this.paused = false;
     }
   }
@@ -119,6 +116,12 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   protected onReturnClicked(): void {
     this.router.navigateByUrl('/home');
   }
+
+  protected onBackwardClicked(): void {}
+
+  protected onForwardClicked(): void {}
+
+  protected onFavoriteClicked(): void {}
 
   private adjustColor(
     color: string,
@@ -192,9 +195,9 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   }
 
   private stopProgressLoop() {
-    if (this.animationFrameId !== null) {
-      cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = null;
-    }
+    if (this.animationFrameId === null) return;
+
+    cancelAnimationFrame(this.animationFrameId);
+    this.animationFrameId = null;
   }
 }
