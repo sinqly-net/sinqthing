@@ -8,7 +8,7 @@ export abstract class BaseMusicProvider {
   abstract readonly apiURL: string;
   protected readonly http = inject(HttpClient);
   protected clientId!: string;
-  protected readonly redirectUri = `${window.location.origin}/callback_${this.getName()}`;
+  protected readonly redirectUri = `${window.location.origin}/callback/${this.getName()}`;
 
   setCredentials(clientId: string): void {
     if (!clientId) throw new AuthenticationNotFoundException();

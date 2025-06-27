@@ -23,8 +23,13 @@ export const routes: Routes = [
     component: ChooseContentComponent,
   },
   {
-    path: 'callback_spotify',
-    component: SpotifyCallbackComponent,
+    path: 'callback',
+    children: [
+      {
+        path: 'spotify',
+        component: SpotifyCallbackComponent,
+      },
+    ],
   },
   {
     path: '**',
