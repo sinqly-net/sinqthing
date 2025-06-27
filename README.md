@@ -1,59 +1,60 @@
 # Sinqthing
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.7.
+**This Project is Work in progress!**
 
-## Development server
+Sinqthing is a customizable control interface designed to breathe new life into old smartphones or tablets. By turning a secondary device into a smart, dedicated media control panel, Sinqthing allows you to manage your music playback, view currently playing tracks, and much more — all from a sleek, touch-friendly UI.
 
-To start a local development server, run:
+## Features
 
-```bash
-ng serve
-```
+#### 📱 Use Any Device
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Install Sinqthing on an old smartphone, tablet or Raspberry Pi and transform it into a powerful media control hub.
 
-## Code scaffolding
+#### 🎵 Music Control
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Connect Sinqthing to your preferred music service and control playback seamlessly. Track information, cover art, and playback status are displayed in real time.
 
-```bash
-ng generate component component-name
-```
+#### 🌐 Web-Based Frontend
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The frontend is built with Angular, styled using Tailwind CSS and Flowbite components, providing a responsive and modern UI.
 
-```bash
-ng generate --help
-```
+## Current Tech Stack
 
-## Building
+Frontend: Angular 20
 
-To build the project run:
+Styling: Tailwind CSS + Flowbite
 
-```bash
-ng build
-```
+Packaging (Mobile): Tauri 2.0 (planned)
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Roadmap
 
-## Running unit tests
+#### 💻 Desktop Companion App
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+A native desktop application is planned to allow easier integration and richer features. The framework/stack for this part is still under evaluation.
 
-```bash
-ng test
-```
+#### 🎛️ Interactive Controls
 
-## Running end-to-end tests
+Configure custom buttons and actions, similar to a programmable control deck. Launch apps, execute commands, or trigger shortcuts — all from your device.
 
-For end-to-end (e2e) testing, run:
+#### 🔧 More Integrations
 
-```bash
-ng e2e
-```
+Support for additional media providers and custom automations.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+#### 🧠 Home-Assistant
 
-## Additional Resources
+Support for Control and Monitoring of your Home-Assistant
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+#### 📡 Wireless Communication
+
+Seamless communication between devices without needing direct USB or wired connections.
+
+## Installation
+
+🚧 Installation instructions will be added soon. Stay tuned as development progresses.
+Contributing
+
+Contributions are welcome! Whether it's feature ideas, bug reports, or code — feel free to open an issue or pull request.
+
+## License
+
+This project is open-source and available under the MPL-2.0 License. 
