@@ -4,6 +4,8 @@ import { MusicProviderStorageService } from './music-provider-storage.service';
 import { BaseMusicProvider } from '@utils/classes/base-music-provider.abstract';
 import { Observable, of } from 'rxjs';
 import { MusicProvider } from '@utils/interfaces/music-providers.type';
+import { GenericCurrentlyPlaying } from '@utils/interfaces/GenericCurrentlyPlaying.interface';
+import { GenericPlaybackState } from '@utils/interfaces/GenericPlaybackState.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -57,7 +59,7 @@ export class MusicService {
     this.storage.removeProvider(name);
   }
 
-  getCurrentlyPlaying(): Observable<any> {
+  getCurrentlyPlaying(): Observable<GenericCurrentlyPlaying | null> {
     const currentlyPlayingSubject = this.providers
       .get(this.selectedMusicProvider)
       ?.getStore().currentlyPlaying$;
@@ -65,7 +67,7 @@ export class MusicService {
     return currentlyPlayingSubject;
   }
 
-  getPlaybackState(): Observable<any> {
+  getPlaybackState(): Observable<GenericPlaybackState | null> {
     const playbackStateSubject = this.providers
       .get(this.selectedMusicProvider)
       ?.getStore().playbackState$;

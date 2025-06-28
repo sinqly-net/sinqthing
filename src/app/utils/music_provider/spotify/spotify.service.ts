@@ -3,12 +3,19 @@ import { BaseMusicProvider } from '@utils/classes/base-music-provider.abstract';
 import { HttpHeaders } from '@angular/common/http';
 import { catchError, map, Observable, of, switchMap, tap, timer } from 'rxjs';
 import { AuthenticationNotFoundException } from '@utils/exceptions/AuthenticationNotFound.exception';
-import { SpotifyStore } from '@utils/music_provider/spotify/spotify.store';
-import { BaseProviderStoreAbstract } from '@utils/classes/base-provider-store.abstract';
+import {
+  AccessToken as SpotifyAccessToken,
+  Artist as SpotifyArtist,
+} from '@spotify/web-api-ts-sdk';
+import { GenericCurrentlyPlaying } from '@utils/interfaces/GenericCurrentlyPlaying.interface';
+import { mapSpotifyPlaybackState } from '@utils/music_provider/spotify/adapter/SpotifyPlaybackState.adapter';
+import { ProviderStore } from '@utils/stores/provider.store';
+import { GenericArtist } from '@utils/interfaces/GenericArtist.interface';
+import { mapSpotifySimplifiedArtist } from '@utils/music_provider/spotify/adapter/SpotifyArtist.adapter';
+import { SpotifyCurrentlyPlaying } from '@utils/music_provider/spotify/interfaces/SpotifyCurrentlyPlaying.type';
+import { mapSpotifyCurrentlyPlaying } from '@utils/music_provider/spotify/adapter/SpotifyCurrentlyPlaying.adapter';
 import { SpotifyPlaybackState } from '@utils/music_provider/spotify/interfaces/SpotifyPlaybackState.interface';
-import { SpotifyCurrentlyPlaying } from '@utils/music_provider/spotify/interfaces/SpotifyCurrentlyPlaying.interface';
-import { SpotifyComplexArtist } from '@utils/music_provider/spotify/interfaces/SpotifyArtist.interface';
-import { SpotifyAccessToken } from '@utils/music_provider/spotify/interfaces/SpotifyAccessToken.interface';
+import { GenericPlaybackState } from '@utils/interfaces/GenericPlaybackState.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +26,7 @@ export class SpotifyService extends BaseMusicProvider {
   private readonly scopes =
     'user-read-currently-playing user-read-playback-state user-modify-playback-state';
   private accessToken: string | null = null;
-  private store = inject(SpotifyStore);
+  private store = inject(ProviderStore);
   private pollingStarted = false;
 
   constructor() {
@@ -121,13 +128,16 @@ export class SpotifyService extends BaseMusicProvider {
       client_id: this.clientId,
     });
 
-    //TODO: add type
     return this.http
-      .post<any>(`${this.spotifyAccountURL}/api/token`, body.toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      })
+      .post<SpotifyAccessToken>(
+        `${this.spotifyAccountURL}/api/token`,
+        body.toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      )
       .pipe(
         map(res => {
           this.accessToken = res.access_token;
@@ -137,15 +147,18 @@ export class SpotifyService extends BaseMusicProvider {
       );
   }
 
-  override getPlaybackState(): Observable<SpotifyPlaybackState> {
+  override getPlaybackState(): Observable<GenericPlaybackState> {
     return this.http
       .get<SpotifyPlaybackState>(`${this.apiURL}/me/player`, {
         headers: this.getAuthHeaders(),
       })
-      .pipe(tap(res => this.store.setPlaybackState(res)));
+      .pipe(
+        map(mapSpotifyPlaybackState),
+        tap(res => this.store.setPlaybackState(res))
+      );
   }
 
-  override getCurrentlyPlaying(): Observable<SpotifyCurrentlyPlaying> {
+  override getCurrentlyPlaying(): Observable<GenericCurrentlyPlaying> {
     return this.http
       .get<SpotifyCurrentlyPlaying>(
         `${this.apiURL}/me/player/currently-playing`,
@@ -153,42 +166,63 @@ export class SpotifyService extends BaseMusicProvider {
           headers: this.getAuthHeaders(),
         }
       )
-      .pipe(tap(res => this.store.setCurrentlyPlaying(res)));
+      .pipe(
+        map(mapSpotifyCurrentlyPlaying),
+        tap(res => this.store.setCurrentlyPlaying(res))
+      );
   }
 
-  getStore(): BaseProviderStoreAbstract {
+  getStore(): ProviderStore {
     return this.store;
   }
 
-  override nextSong(): Observable<any> {
+  override nextSong(): Observable<boolean> {
     console.log('[Spotify] Next song');
     return of(true);
   }
 
-  override previousSong(): Observable<any> {
+  override previousSong(): Observable<boolean> {
     console.log('[Spotify] Previous song');
     return of(true);
   }
 
-  override pause(): Observable<null> {
-    return this.http.put<null>(`${this.apiURL}/me/player/pause`, null, {
-      headers: this.getAuthHeaders(),
-    });
-  }
-
-  override resume(): Observable<null> {
-    return this.http.put<null>(`${this.apiURL}/me/player/play`, null, {
-      headers: this.getAuthHeaders(),
-    });
-  }
-
-  override getArtist(artist: string): Observable<SpotifyComplexArtist> {
-    return this.http.get<SpotifyComplexArtist>(
-      `${this.apiURL}/artists/${this.parseArtistFromURI(artist)}`,
-      {
+  override pause(): Observable<boolean> {
+    return this.http
+      .put<string>(`${this.apiURL}/me/player/pause`, null, {
         headers: this.getAuthHeaders(),
-      }
-    );
+      })
+      .pipe(
+        map(() => true),
+        catchError(error => {
+          if (error.status !== 200) return of(false);
+          return of(true);
+        })
+      );
+  }
+
+  override resume(): Observable<boolean> {
+    return this.http
+      .put<string>(`${this.apiURL}/me/player/play`, null, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(
+        map(() => true),
+        catchError(error => {
+          if (error.status !== 200) return of(false);
+          return of(true);
+        })
+      );
+  }
+
+  override getArtist(artist: string): Observable<GenericArtist> {
+    return this.http
+      .get<SpotifyArtist>(
+        `${this.apiURL}/artists/${this.parseArtistFromURI(artist)}`,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      )
+      .pipe(map(mapSpotifySimplifiedArtist));
   }
 
   private parseArtistFromURI(artistURI: string): string {

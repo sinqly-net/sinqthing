@@ -2,7 +2,10 @@ import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthenticationNotFoundException } from '@utils/exceptions/AuthenticationNotFound.exception';
-import { BaseProviderStoreAbstract } from '@utils/classes/base-provider-store.abstract';
+import { ProviderStore } from '@utils/stores/provider.store';
+import { GenericArtist } from '@utils/interfaces/GenericArtist.interface';
+import { GenericCurrentlyPlaying } from '@utils/interfaces/GenericCurrentlyPlaying.interface';
+import { GenericPlaybackState } from '@utils/interfaces/GenericPlaybackState.interface';
 
 export abstract class BaseMusicProvider {
   abstract readonly apiURL: string;
@@ -19,24 +22,21 @@ export abstract class BaseMusicProvider {
 
   abstract getLabel(): string;
 
-  // TODO: add general type
-  abstract getCurrentlyPlaying(): Observable<any>;
+  abstract getCurrentlyPlaying(): Observable<GenericCurrentlyPlaying>;
 
-  // TODO: add general type
-  abstract getPlaybackState(): Observable<any>;
+  abstract getPlaybackState(): Observable<GenericPlaybackState>;
 
   abstract nextSong(): Observable<boolean>;
 
   abstract previousSong(): Observable<boolean>;
 
-  abstract pause(): Observable<null>;
+  abstract pause(): Observable<boolean>;
 
-  abstract resume(): Observable<null>;
+  abstract resume(): Observable<boolean>;
 
-  // TODO: add general type
-  abstract getArtist(artist: any): any;
+  abstract getArtist(artist: string): Observable<GenericArtist>;
 
-  abstract getStore(): BaseProviderStoreAbstract;
+  abstract getStore(): ProviderStore;
 
   callback?(): Observable<boolean>;
 

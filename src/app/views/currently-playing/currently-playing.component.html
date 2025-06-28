@@ -50,7 +50,7 @@
       <div [class.bg-gray-500]="!this.loaded"
            class="h-[4px] w-full bg-gray-300 relative overflow-hidden hover:h-[8px] duration-100">
         @if (loaded) {
-          <div [style.width.%]="(progressMs / currentlyPlaying.item.duration_ms) * 100"
+          <div [style.width.%]="(progressMs / currentlyPlaying!.track!.durationMs) * 100"
                class="h-full bg-green-500 transition-all">
           </div>
         }
@@ -61,7 +61,7 @@
         <div class="relative inline-block">
           @if (loaded) {
             <i [ngClass]="shuffleClasses" class="fas fa-random"></i>
-            @if (playbackState.smart_shuffle) {
+            @if (playbackState!.shuffle === 'smart_shuffle') {
               <i class="fas fa-star text-yellow-400 text-sm absolute top-0 -left-1.5 rounded-full p-[1px]"></i>
             }
           } @else {
@@ -74,7 +74,7 @@
       </button>
       <button (click)="onPauseClicked()" [ngClass]="buttonClasses" class="p-6">
         @if (loaded) {
-          @if (!paused) {
+          @if (isPlaying) {
             <i class="fa-solid fa-pause"></i>
           } @else {
             <i class="fa-solid fa-play"></i>

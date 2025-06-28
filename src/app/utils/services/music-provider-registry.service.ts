@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { SpotifyService } from '@utils/music_provider/spotify/spotify.service';
 import { BaseMusicProvider } from '@utils/classes/base-music-provider.abstract';
 
@@ -6,13 +6,12 @@ import { BaseMusicProvider } from '@utils/classes/base-music-provider.abstract';
   providedIn: 'root',
 })
 export class MusicProviderRegistryService {
-  constructor(private spotifyService: SpotifyService) {}
+  private spotifyService = inject(SpotifyService);
 
   getProviderInstance(name: string): BaseMusicProvider | null {
     switch (name) {
       case 'spotify':
         return this.spotifyService;
-      // Weitere Provider hier hinzufügen
       default:
         return null;
     }

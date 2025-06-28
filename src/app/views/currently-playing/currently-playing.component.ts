@@ -6,13 +6,15 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { MusicService } from '@utils/services/music.service';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+import { MusicService } from '@utils/services/music.service'; // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-expect-error
 import ColorThief from 'colorthief';
 import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
 import { BaseMusicProvider } from '@utils/classes/base-music-provider.abstract';
+import { GenericCurrentlyPlaying } from '@utils/interfaces/GenericCurrentlyPlaying.interface';
+import { GenericArtist } from '@utils/interfaces/GenericArtist.interface';
+import { GenericPlaybackState } from '@utils/interfaces/GenericPlaybackState.interface';
 
 @Component({
   selector: 'app-currently-playing',
@@ -22,22 +24,23 @@ import { BaseMusicProvider } from '@utils/classes/base-music-provider.abstract';
 })
 export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   protected readonly musicService = inject(MusicService);
-  //TODO replace with custom type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected currentlyPlaying: any = null;
-  //TODO replace with custom type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected playbackState: any = null;
+  protected currentlyPlaying: GenericCurrentlyPlaying | null = null;
+  protected playbackState: GenericPlaybackState | null = null;
   protected dominantColor = '#000000';
   @ViewChild('cover_img') protected coverImgElementRef?: ElementRef;
   protected progressMs = 0;
-  protected paused = false;
+  protected isPlaying = false;
   private readonly router = inject(Router);
   private animationFrameId: number | null = null;
   private provider: BaseMusicProvider | undefined;
 
   protected get loaded(): boolean {
-    return this.currentlyPlaying && this.playbackState;
+    return (
+      this.currentlyPlaying !== null &&
+      this.playbackState !== null &&
+      this.currentlyPlaying !== undefined &&
+      this.playbackState !== undefined
+    );
   }
 
   protected get buttonClasses(): object {
@@ -49,7 +52,7 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
 
   protected get shuffleClasses(): object {
     return {
-      'text-green-500': this.playbackState.shuffle_state ?? false,
+      'text-green-500': this.playbackState?.shuffle ?? false,
     };
   }
 
@@ -64,21 +67,23 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   }
 
   protected get coverImage(): string {
-    return this.currentlyPlaying.item.album.images[0].url;
+    if (!this.currentlyPlaying || !this.currentlyPlaying.album) return '';
+    return this.currentlyPlaying.album.images[0].url;
   }
 
   protected get songName(): string {
-    return this.currentlyPlaying.item.name;
+    if (!this.currentlyPlaying || !this.currentlyPlaying.track) return '';
+    return this.currentlyPlaying.track.title;
   }
 
   protected get albumName(): string {
-    return this.currentlyPlaying.item.album.name;
+    if (!this.currentlyPlaying || !this.currentlyPlaying.album) return '';
+    return this.currentlyPlaying.album.name;
   }
 
-  //TODO replace with custom type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected get artists(): any[] {
-    return this.currentlyPlaying.item.artists;
+  protected get artists(): GenericArtist[] {
+    if (!this.currentlyPlaying || !this.currentlyPlaying.track) return [];
+    return this.currentlyPlaying.track.artists;
   }
 
   ngOnInit() {
@@ -103,18 +108,18 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   protected onPauseClicked() {
     if (!this.provider) return;
 
-    if (this.currentlyPlaying && !this.paused) {
+    if (this.currentlyPlaying && this.isPlaying) {
       this.provider.pause().subscribe(() => {
         setTimeout(() => this.loadPlaying(), 5);
       });
 
-      this.paused = true;
+      this.isPlaying = false;
     } else {
       this.provider.resume().subscribe(() => {
         setTimeout(() => this.loadPlaying(), 5);
       });
 
-      this.paused = false;
+      this.isPlaying = true;
     }
   }
 
@@ -171,10 +176,10 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
       if (!data) return;
 
       this.currentlyPlaying = data;
-      this.paused = !data.is_playing;
-      this.progressMs = data.progress_ms ?? 0;
+      this.isPlaying = data.isPlaying;
+      this.progressMs = data.progressMs ?? 0;
 
-      if (data.is_playing) {
+      if (data.isPlaying) {
         this.startProgressLoop();
       } else {
         this.stopProgressLoop();
