@@ -52,7 +52,7 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
 
   protected get shuffleClasses(): object {
     return {
-      'text-green-500': this.playbackState?.shuffle ?? false,
+      'text-green-500': this.playbackState?.shuffle !== 'off',
     };
   }
 

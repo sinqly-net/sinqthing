@@ -5,6 +5,6 @@ export function mapSpotifyShuffleType(
   smart_shuffle: boolean
 ): GenericShuffleType {
   if (shuffle && !smart_shuffle) return 'shuffle';
-  if (!shuffle && smart_shuffle) return 'smart_shuffle';
+  if (shuffle && smart_shuffle) return 'smart_shuffle';
   return 'off';
 }
