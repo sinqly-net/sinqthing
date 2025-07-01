@@ -15,6 +15,7 @@ import { BaseMusicProvider } from '@utils/classes/base-music-provider.abstract';
 import { GenericCurrentlyPlaying } from '@utils/interfaces/GenericCurrentlyPlaying.interface';
 import { GenericArtist } from '@utils/interfaces/GenericArtist.interface';
 import { GenericPlaybackState } from '@utils/interfaces/GenericPlaybackState.interface';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-currently-playing',
@@ -29,10 +30,11 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   protected dominantColor = '#000000';
   @ViewChild('cover_img') protected coverImgElementRef?: ElementRef;
   protected progressMs = 0;
-  protected isPlaying = false;
+  protected isPlaying: boolean | undefined = undefined;
   private readonly router = inject(Router);
   private animationFrameId: number | null = null;
   private provider: BaseMusicProvider | undefined;
+  private finishedLoading$ = new BehaviorSubject<boolean>(false);
 
   protected get loaded(): boolean {
     return (
@@ -106,32 +108,39 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   }
 
   protected onPauseClicked() {
-    if (!this.provider) return;
+    if (!this.provider || !this.currentlyPlaying) return;
 
-    if (this.currentlyPlaying && this.isPlaying) {
-      this.provider.pause().subscribe(() => {
-        setTimeout(() => this.loadPlaying(), 5);
-      });
-
-      this.isPlaying = false;
+    if (this.isPlaying) {
+      this.provider.pause().subscribe();
     } else {
-      this.provider.resume().subscribe(() => {
-        setTimeout(() => this.loadPlaying(), 5);
-      });
-
-      this.isPlaying = true;
+      this.provider.resume().subscribe();
     }
+
+    this.isPlaying = !this.isPlaying;
+    this.loadPlaying();
   }
 
   protected onReturnClicked(): void {
     this.router.navigateByUrl('/home');
   }
 
-  protected onBackwardClicked(): void {}
+  protected onBackwardClicked(): void {
+    this.provider?.previousSong().subscribe(() => {
+      this.loadPlaying();
+      this.finishedLoading$.subscribe(() => (this.isPlaying = true));
+    });
+  }
 
-  protected onForwardClicked(): void {}
+  protected onForwardClicked(): void {
+    this.provider?.nextSong().subscribe(() => {
+      this.loadPlaying();
+      this.finishedLoading$.subscribe(() => (this.isPlaying = true));
+    });
+  }
 
-  protected onFavoriteClicked(): void {}
+  protected onFavoriteClicked(): void {
+    return;
+  }
 
   private adjustColor(
     color: string,
@@ -171,25 +180,29 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
     return 0.5 - normalized;
   }
 
-  private loadPlaying() {
+  private loadPlaying(): void {
     this.musicService.getCurrentlyPlaying().subscribe(data => {
+      this.finishedLoading$.next(false);
+
       if (!data) return;
 
       this.currentlyPlaying = data;
       this.isPlaying = data.isPlaying;
       this.progressMs = data.progressMs ?? 0;
 
-      if (data.isPlaying) {
+      if (this.isPlaying ?? false) {
         this.startProgressLoop();
       } else {
         this.stopProgressLoop();
       }
-    });
 
-    this.musicService.getPlaybackState().subscribe(data => {
-      if (!data) return;
+      this.musicService.getPlaybackState().subscribe(data => {
+        if (!data) return;
 
-      this.playbackState = data;
+        this.playbackState = data;
+
+        this.finishedLoading$.next(true);
+      });
     });
   }
 

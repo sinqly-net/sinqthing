@@ -177,13 +177,35 @@ export class SpotifyService extends BaseMusicProvider {
   }
 
   override nextSong(): Observable<boolean> {
-    console.log('[Spotify] Next song');
-    return of(true);
+    return this.http
+      .post(
+        `${this.apiURL}/me/player/next`,
+        {},
+        { headers: this.getAuthHeaders() }
+      )
+      .pipe(
+        map(() => true),
+        catchError(error => {
+          if (error.status !== 204) return of(false);
+          return of(true);
+        })
+      );
   }
 
   override previousSong(): Observable<boolean> {
-    console.log('[Spotify] Previous song');
-    return of(true);
+    return this.http
+      .post(
+        `${this.apiURL}/me/player/previous`,
+        {},
+        { headers: this.getAuthHeaders() }
+      )
+      .pipe(
+        map(() => true),
+        catchError(error => {
+          if (error.status !== 204) return of(false);
+          return of(true);
+        })
+      );
   }
 
   override pause(): Observable<boolean> {
