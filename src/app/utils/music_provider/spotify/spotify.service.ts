@@ -40,14 +40,20 @@ export class SpotifyService extends BaseMusicProvider {
 
     timer(0, intervalMs)
       .pipe(
-        switchMap(() => this.getCurrentlyPlaying()),
+        switchMap(() => {
+          if (!this.enablePulling) return of(null);
+          return this.getCurrentlyPlaying();
+        }),
         catchError(() => of(null))
       )
       .subscribe();
 
     timer(0, intervalMs)
       .pipe(
-        switchMap(() => this.getPlaybackState()),
+        switchMap(() => {
+          if (!this.enablePulling) return of(null);
+          return this.getPlaybackState();
+        }),
         catchError(() => of(null))
       )
       .subscribe();

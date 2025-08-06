@@ -89,11 +89,13 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.loadPlaying();
     this.provider = this.musicService.getProvider();
+    if (this.provider) this.provider.enablePulling = true;
+    this.loadPlaying();
   }
 
   ngOnDestroy() {
+    if (this.provider) this.provider.enablePulling = false;
     this.stopProgressLoop();
   }
 

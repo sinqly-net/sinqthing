@@ -9,6 +9,7 @@ import { GenericPlaybackState } from '@utils/interfaces/GenericPlaybackState.int
 
 export abstract class BaseMusicProvider {
   abstract readonly apiURL: string;
+  public enablePulling = false;
   protected readonly http = inject(HttpClient);
   protected clientId!: string;
   protected readonly redirectUri = `${window.location.origin}/callback/${this.getName()}`;
