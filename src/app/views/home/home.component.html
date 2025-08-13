@@ -1,8 +1,15 @@
 <div class="m-6 grid lg:grid-cols-5 md:grid-cols-4 gap-5">
-  <ng-container
-    *ngTemplateOutlet="homeTextButtonTemplate; context: {'text': 'Spielt gerade', 'link': '/currently_playing'}"></ng-container>
-  <ng-container
-    *ngTemplateOutlet="homeTextButtonTemplate; context: {'text': 'Auswählen', 'link': '/choose_content'}"></ng-container>
+  @for (navItem of routes; track navItem.path) {
+    @if (navItem.data && navItem.path && navItem.data['navConfig']) {
+      @let config = navItem.data['navConfig'];
+      <button
+        (click)="redirect(navItem.path)"
+        class="p-10 flex justify-center dark:bg-slate-700 rounded-lg shadow-xl border-solid border-1 border-slate-600">
+        <span class="select-none text-xl content-center">{{ config.title }}</span>
+      </button>
+    }
+  }
+  <!--
   <button
     (click)="addSpotifyProvider()"
     class="p-10 flex justify-center dark:bg-slate-700 rounded-lg shadow-xl border-solid border-1 border-slate-600">
@@ -13,12 +20,5 @@
     class="p-10 flex justify-center dark:bg-slate-700 rounded-lg shadow-xl border-solid border-1 border-slate-600">
     <span class="select-none text-xl content-center">Login Spotify</span>
   </button>
+  -->
 </div>
-
-<ng-template #homeTextButtonTemplate let-link="link" let-text="text">
-  <button
-    (click)="redirect(link)"
-    class="p-10 flex justify-center dark:bg-slate-700 rounded-lg shadow-xl border-solid border-1 border-slate-600">
-    <span class="select-none text-xl content-center">{{ text }}</span>
-  </button>
-</ng-template>

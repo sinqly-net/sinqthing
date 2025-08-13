@@ -1,19 +1,18 @@
-import { inject, Injectable } from '@angular/core';
-import { SpotifyService } from '@utils/music_provider/spotify/spotify.service';
+import { inject, Injectable, Injector } from '@angular/core';
 import { BaseMusicProvider } from '@utils/classes/base-music-provider.abstract';
+import {
+  availableProviders,
+  MusicProviderList,
+} from '@utils/interfaces/music-providers.type';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MusicProviderRegistryService {
-  private spotifyService = inject(SpotifyService);
+  private readonly injector = inject(Injector);
 
-  getProviderInstance(name: string): BaseMusicProvider | null {
-    switch (name) {
-      case 'spotify':
-        return this.spotifyService;
-      default:
-        return null;
-    }
+  getProviderInstance(name: MusicProviderList): BaseMusicProvider | undefined {
+    if (!availableProviders[name]) return undefined;
+    return this.injector.get<BaseMusicProvider>(availableProviders[name]);
   }
 }

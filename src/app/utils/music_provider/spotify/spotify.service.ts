@@ -16,6 +16,7 @@ import { SpotifyCurrentlyPlaying } from '@utils/music_provider/spotify/interface
 import { mapSpotifyCurrentlyPlaying } from '@utils/music_provider/spotify/adapter/SpotifyCurrentlyPlaying.adapter';
 import { SpotifyPlaybackState } from '@utils/music_provider/spotify/interfaces/SpotifyPlaybackState.interface';
 import { GenericPlaybackState } from '@utils/interfaces/GenericPlaybackState.interface';
+import { SpotifySetupGuideComponent } from '@utils/music_provider/spotify/setup-guide/spotify-setup-guide.component';
 
 @Injectable({
   providedIn: 'root',
@@ -251,6 +252,14 @@ export class SpotifyService extends BaseMusicProvider {
         }
       )
       .pipe(map(mapSpotifySimplifiedArtist));
+  }
+
+  getSetupGuideComponent() {
+    return SpotifySetupGuideComponent;
+  }
+
+  getCredentials(): string | null {
+    return this.clientId;
   }
 
   private parseArtistFromURI(artistURI: string): string {

@@ -6,6 +6,7 @@ import { ProviderStore } from '@utils/stores/provider.store';
 import { GenericArtist } from '@utils/interfaces/GenericArtist.interface';
 import { GenericCurrentlyPlaying } from '@utils/interfaces/GenericCurrentlyPlaying.interface';
 import { GenericPlaybackState } from '@utils/interfaces/GenericPlaybackState.interface';
+import { BaseProviderSetupGuide } from '@utils/classes/base-provider-setup-guide.abstract';
 
 export abstract class BaseMusicProvider {
   abstract readonly apiURL: string;
@@ -38,6 +39,10 @@ export abstract class BaseMusicProvider {
   abstract getArtist(artist: string): Observable<GenericArtist>;
 
   abstract getStore(): ProviderStore;
+
+  abstract getSetupGuideComponent(): typeof BaseProviderSetupGuide;
+
+  abstract getCredentials(): string | null;
 
   callback?(): Observable<boolean>;
 

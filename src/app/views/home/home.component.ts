@@ -1,16 +1,17 @@
 import { Component, inject } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
 import { Router } from '@angular/router';
 import { MusicService } from '@utils/services/music.service';
 import { SpotifyService } from '@utils/music_provider/spotify/spotify.service';
+import { routes } from '@app/app.routes';
 
 @Component({
   selector: 'app-home',
-  imports: [NgTemplateOutlet],
+  imports: [],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent {
+  protected readonly routes = routes;
   private readonly router = inject(Router);
   private readonly musicService = inject(MusicService);
   private spotifyService = inject(SpotifyService);
