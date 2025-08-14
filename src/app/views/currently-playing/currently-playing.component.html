@@ -12,10 +12,10 @@
              (load)="extractDominantColor()" crossorigin="anonymous" class="shadow-xl">
       </div>
       <div class="col-span-3 grid content-center">
-        <span class="lg:text-3xl md:text-2xl mb-2">
+        <span class="lg:text-3xl md:text-2xl mb-2" appAutoResizeText [maxFontSize]="32" [minFontSize]="16">
           {{ albumName }}
         </span>
-        <span class="lg:text-7xl md:text-6xl mb-6">
+        <span class="lg:text-7xl md:text-6xl mb-6" appAutoResizeText [maxFontSize]="64" [minFontSize]="32">
           {{ songName }}
         </span>
         <div class="">

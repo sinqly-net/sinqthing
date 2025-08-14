@@ -16,10 +16,11 @@ import { GenericCurrentlyPlaying } from '@utils/interfaces/GenericCurrentlyPlayi
 import { GenericArtist } from '@utils/interfaces/GenericArtist.interface';
 import { GenericPlaybackState } from '@utils/interfaces/GenericPlaybackState.interface';
 import { BehaviorSubject } from 'rxjs';
+import { AutoResizeTextDirective } from '@utils/directives/auto-resize-text.directive';
 
 @Component({
   selector: 'app-currently-playing',
-  imports: [NgClass],
+  imports: [NgClass, AutoResizeTextDirective],
   templateUrl: './currently-playing.component.html',
   styleUrl: './currently-playing.component.scss',
 })
