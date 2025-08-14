@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MusicService } from '@utils/services/music.service';
-import { Router } from '@angular/router';
+import { SpotifyService } from '@utils/music_provider/spotify/spotify.service';
 
 @Component({
   selector: 'provider-spotify-setup-guide',
@@ -20,7 +20,7 @@ export class SpotifySetupGuideComponent
 {
   input_client_id = new FormControl('', [Validators.required]);
   private readonly musicService = inject(MusicService);
-  private readonly router = inject(Router);
+  private readonly spotifyService = inject(SpotifyService);
 
   ngOnInit(): void {
     const currentClientID =
@@ -31,6 +31,6 @@ export class SpotifySetupGuideComponent
   setupSpotify() {
     if (!this.input_client_id.valid || !this.input_client_id.value) return;
     this.musicService.registerProvider('spotify', this.input_client_id.value);
-    this.router.navigate(['/currently_playing']);
+    this.spotifyService.login();
   }
 }

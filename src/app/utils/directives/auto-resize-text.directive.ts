@@ -4,24 +4,35 @@ import {
   ElementRef,
   inject,
   Input,
-  OnChanges,
+  OnDestroy,
 } from '@angular/core';
 
 @Directive({
   selector: '[appAutoResizeText]',
 })
-export class AutoResizeTextDirective implements AfterViewInit, OnChanges {
+export class AutoResizeTextDirective implements AfterViewInit, OnDestroy {
   @Input() minFontSize = 8;
   @Input() maxFontSize = 32;
   @Input() maxChars = 20;
   private el: ElementRef<HTMLElement> = inject(ElementRef);
 
+  private observer = new MutationObserver(() => {
+    this.resizeByLength();
+  });
+
   ngAfterViewInit() {
     this.resizeByLength();
+
+    this.observer.observe(this.el.nativeElement, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+      attributes: true,
+    });
   }
 
-  ngOnChanges() {
-    this.resizeByLength();
+  ngOnDestroy() {
+    this.observer.disconnect();
   }
 
   private resizeByLength() {
