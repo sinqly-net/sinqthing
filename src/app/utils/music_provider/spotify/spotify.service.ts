@@ -17,6 +17,7 @@ import { mapSpotifyCurrentlyPlaying } from '@utils/music_provider/spotify/adapte
 import { SpotifyPlaybackState } from '@utils/music_provider/spotify/interfaces/SpotifyPlaybackState.interface';
 import { GenericPlaybackState } from '@utils/interfaces/GenericPlaybackState.interface';
 import { SpotifySetupGuideComponent } from '@utils/music_provider/spotify/setup-guide/spotify-setup-guide.component';
+import moment from 'moment';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,7 @@ export class SpotifyService extends BaseMusicProvider {
   override apiURL = 'https://api.spotify.com/v1';
   private readonly spotifyAccountURL = 'https://accounts.spotify.com';
   private readonly scopes =
-    'user-read-currently-playing user-read-playback-state user-modify-playback-state';
+    'user-read-currently-playing user-read-playback-state user-modify-playback-state user-library-read user-library-modify';
   private accessToken: string | null = null;
   private store = inject(ProviderStore);
   private pollingStarted = false;
@@ -252,6 +253,46 @@ export class SpotifyService extends BaseMusicProvider {
         }
       )
       .pipe(map(mapSpotifySimplifiedArtist));
+  }
+
+  override isTrackFavorite(id: string): Observable<boolean> {
+    return this.http
+      .get<boolean[]>(`${this.apiURL}/me/tracks/contains`, {
+        params: { ids: id },
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(map(values => values[0]));
+  }
+
+  override toggleTrackFavorite(id: string): void {
+    this.isTrackFavorite(id).subscribe(isFavorite => {
+      console.log(isFavorite);
+      if (isFavorite) {
+        this.http
+          .delete(`${this.apiURL}/me/tracks`, {
+            body: {
+              ids: [id],
+            },
+            headers: this.getAuthHeaders(),
+          })
+          .subscribe();
+      } else {
+        this.http
+          .put<void>(
+            `${this.apiURL}/me/tracks`,
+            {
+              timestamped_ids: [
+                {
+                  id: id,
+                  added_at: moment(new Date()).format('YYYY-MM-DDTHH:mm:ssZ'),
+                },
+              ],
+            },
+            { headers: this.getAuthHeaders() }
+          )
+          .subscribe();
+      }
+    });
   }
 
   getSetupGuideComponent() {

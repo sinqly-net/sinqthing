@@ -44,6 +44,10 @@ export abstract class BaseMusicProvider {
 
   abstract getCredentials(): string | null;
 
+  abstract isTrackFavorite(id: string): Observable<boolean>;
+
+  abstract toggleTrackFavorite(id: string): void;
+
   callback?(): Observable<boolean>;
 
   createRandomString(length: number): string {

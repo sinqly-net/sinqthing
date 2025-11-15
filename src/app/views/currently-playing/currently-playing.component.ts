@@ -1,11 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  inject,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, } from '@angular/core';
 import { MusicService } from '@utils/services/music.service';
 import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
@@ -33,6 +26,7 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   protected playbackState: GenericPlaybackState | null = null;
   protected progressMs = 0;
   protected isPlaying: boolean | undefined = undefined;
+  protected isFavorite: boolean | undefined = undefined;
   protected mixedColor: Color = { r: 0, g: 0, b: 0 };
   private readonly colorService = inject(ColorService);
   private readonly router = inject(Router);
@@ -135,7 +129,10 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
   }
 
   protected onFavoriteClicked(): void {
-    return;
+    if (!this.currentlyPlaying?.track?.id) return;
+    this.musicService
+      .getProvider()
+      ?.toggleTrackFavorite(this.currentlyPlaying?.track?.id);
   }
 
   private loadPlaying(): void {
@@ -161,6 +158,15 @@ export class CurrentlyPlayingComponent implements OnInit, OnDestroy {
 
         this.finishedLoading$.next(true);
       });
+
+      if (data?.track?.id) {
+        this.musicService
+          .getProvider()
+          ?.isTrackFavorite(data?.track?.id)
+          .subscribe(value => {
+            this.isFavorite = value;
+          });
+      }
     });
   }
 
